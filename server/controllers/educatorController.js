@@ -1,22 +1,33 @@
+import { clerkClient, getAuth } from "@clerk/express"
 
 export const updateRoletoEducator = async (req, res) => {
-   try {
-      const  userId  = req.auth.userId
+  try {
+    const { userId } = getAuth(req)  // ← yeh change karo
+    
+    console.log("User ID:", userId)
 
-      await clerkClient.users.updateUserMetadata(userId, {
-         publicMetadata: {
-            role: "educator",
-         }
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated"
       })
-      res.json({
-         success: true,
-         message: "you can publish a course now"
-      })
-   }
-   catch (error) {
-      res.status(500).json({
-         success: false,
-         message: error.message
-      })
-   }
+    }
+
+    await clerkClient.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        role: "educator",
+      },
+    })
+
+    return res.json({
+      success: true,
+      message: "you can publish a course now",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
 }

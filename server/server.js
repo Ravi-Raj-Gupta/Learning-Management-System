@@ -6,16 +6,23 @@ import { clerkWebhook } from "./controllers/webhooks.js"
 import educatorRouter from "./routes/educatorRoutes.js"
 import { clerkMiddleware } from "@clerk/express"
 import { clerkClient } from "@clerk/express"
-
+import connectCloudinary from "./configs/cloudinary.js"
 // Intialize express
 const app = express()
 
 
 // connect to database
 await connectDB()
+await connectCloudinary()
+
+
 
 // Middleware
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:5173", // your frontend
+  credentials: true
+}))
+app.use(express.json())
 app.use(clerkMiddleware())
 
 
