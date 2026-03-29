@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 
 // ✅ Webhook routes BEFORE express.json() — need raw body
 app.post("/clerk", express.raw({ type: "*/*" }), clerkWebhook)
-app.post("/stripe", express.raw({ type: "*/*" }), stripeWebhooks)
+app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks)
 
 // ✅ express.json() AFTER webhook routes
 app.use(express.json())
