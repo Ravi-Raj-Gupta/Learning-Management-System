@@ -44,63 +44,62 @@ const CourseDetails = () => {
       calculateCourseDuration,
       calculateChapterTime,
       Currency,
-      backendUrl, 
+      backendUrl,
       userData,
       getToken,
    } = useContext(AppContext);
 
    const fetchCourseData = async () => {
       try {
-         const {data} = await axios.get(backendUrl + "/api/course/" + id)
+         const { data } = await axios.get(backendUrl + "/api/course/" + id);
 
-         if(data.success){
-            setCourseData(data.courseData)
+         if (data.success) {
+            setCourseData(data.courseData);
+         } else {
+            toast.error(data.message);
          }
-         else{
-            toast.error(data.message)
-         }
-
       } catch (error) {
-            toast.error(error.message)
-         
+         toast.error(error.message);
       }
    };
 
-const enrollCourse = async() => {
-   try {
-      if(!userData){
-         return toast.warn('login to enroll')
-      }
-      if(isAlreadyEnrolled){
-         return toast.warn('already enrolled')
-      }
-const token = await getToken();
-      const {data} = await axios.post(backendUrl + '/api/user/purchase', {courseId : courseData._id}, {headers : {Authorization : `Bearer ${token}`}})
+   const enrollCourse = async () => {
+      try {
+         if (!userData) {
+            return toast.warn("login to enroll");
+         }
+         if (isAlreadyEnrolled) {
+            return toast.warn("already enrolled");
+         }
+         const token = await getToken();
+         const { data } = await axios.post(
+            backendUrl + "/api/user/purchase",
+            { courseId: courseData._id },
+            { headers: { Authorization: `Bearer ${token}` } },
+         );
 
-      if(data.success){
-         const {session_url} = data
-         window.location.replace(session_url)
+         if (data.success) {
+            const { session_url } = data;
+            window.location.replace(session_url);
+         } else {
+            toast.error(data.message);
+         }
+      } catch (error) {
+         toast.error(error.message);
       }
-      else{
-         toast.error(data.message)
-      }
-   } catch (error) {
-         toast.error(error.message)
-
-      
-   }
-}
+   };
 
    useEffect(() => {
       fetchCourseData();
    }, []);
 
-   useEffect(()=>{
-      if(userData && courseData){
-         setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id))
+   useEffect(() => {
+      if (userData && courseData) {
+         setIsAlreadyEnrolled(
+            userData.enrolledCourses.includes(courseData._id),
+         );
       }
-
-   },[userData, courseData ])
+   }, [userData, courseData]);
    const toggleSection = (index) => {
       setOpensection((prev) => ({ ...prev, [index]: !prev[index] }));
    };
@@ -158,7 +157,9 @@ const token = await getToken();
                   </div>
                   <p className="text-sm ">
                      Course By{" "}
-                     <span className="text-blue-600 underline">{courseData.educator.name}</span>
+                     <span className="text-blue-600 underline">
+                        {courseData.educator.name}
+                     </span>
                   </p>
 
                   <div className="pt-8 text-gray-800">
@@ -214,7 +215,10 @@ const token = await getToken();
                                                       <p
                                                          onClick={() =>
                                                             setPlayerData({
-                                                               videoId: getYoutubeVideoId(lecture.lectureUrl),
+                                                               videoId:
+                                                                  getYoutubeVideoId(
+                                                                     lecture.lectureUrl,
+                                                                  ),
                                                             })
                                                          }
                                                          className="text-blue-500 cursor-pointer"
@@ -328,7 +332,10 @@ const token = await getToken();
                      </div>
 
                      {/* Button */}
-                     <button onClick = {enrollCourse} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-base rounded-lg font-semibold mb-6">
+                     <button
+                        onClick={enrollCourse}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-base rounded-lg font-semibold mb-6"
+                     >
                         {isAlreadyEnrolled ? "Already Enrolled " : "Enroll Now"}
                      </button>
 
