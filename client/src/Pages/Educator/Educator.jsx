@@ -8,7 +8,7 @@ const Educator = () => {
    return (
       <div className="min-h-screen bg-white ">
          <Navbar />
-         <div className="flex">
+         <div className="flex flex-col md:flex-row">
             <Sidebar />
             <div className="flex-1">
                {<Outlet />}

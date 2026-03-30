@@ -35,10 +35,10 @@ const StudentEnrolled = () => {
 
    return enrolledStudents ? (
       <div>
-         <div className="min-h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
-  <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-200">
-
-    <table className="w-full table-auto">
+         <div className="min-h-screen p-4 pt-8 md:p-8 md:pb-0">
+  <div className="w-full max-w-4xl overflow-hidden rounded-md border border-gray-200 bg-white">
+    <div className="overflow-x-auto">
+    <table className="w-full min-w-[640px] table-auto">
       
       {/* TABLE HEAD */}
       <thead className="text-gray-900 border-b border-gray-200 text-sm text-left">
@@ -98,6 +98,7 @@ const StudentEnrolled = () => {
         ))}
       </tbody>
     </table>
+    </div>
   </div>
 </div>
       </div>

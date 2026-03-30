@@ -42,14 +42,14 @@ const Footer = () => {
             The latest news, articles, and resources, sent to your inbox weekly.
           </p>
 
-          <div className="flex gap-2 text-left">
+          <div className="flex flex-col gap-2 text-left sm:flex-row">
             <input
               type="email"
               placeholder="Enter your email"
               className="bg-[#132445] px-4 py-2 rounded-md outline-none text-sm w-full"
             />
 
-            <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white text-sm">
+            <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white text-sm sm:w-auto">
               Subscribe
             </button>
           </div>

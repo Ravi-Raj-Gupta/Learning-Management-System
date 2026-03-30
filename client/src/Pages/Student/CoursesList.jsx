@@ -30,10 +30,10 @@ const CoursesList = () => {
 
    return (
       <>
-         <div className="relative md:px-36 px-8 pt-20 text-left">
-            <div className="flex md:flex-row flex-col gap-6 items-start justify-between w-full">
+         <div className="relative px-4 pt-20 text-left sm:px-6 md:px-12 lg:px-20 xl:px-36">
+            <div className="flex w-full flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
                <div>
-                  <h1 className="text-4xl font-semibold text-gray-800">
+                  <h1 className="text-3xl font-semibold text-gray-800 sm:text-4xl">
                      Course List
                   </h1>
                   <p className="text-gray-500">
@@ -50,7 +50,7 @@ const CoursesList = () => {
             </div>
 
             {input && (
-               <div className="inline-flex items-center gap-4 px-4 py-2 border mt-8 -mb-8 text-gray-600">
+               <div className="mt-8 -mb-4 inline-flex items-center gap-4 border px-4 py-2 text-gray-600">
                   <p>{input}</p>
                   <img
                      src={assets.cross_icon}
@@ -61,7 +61,7 @@ const CoursesList = () => {
                </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 my-16 gap-3 px-2 md:p-0">
+            <div className="my-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                {filteredCourse.map((course, index) => (
                   <CourseCard key={index} course={course} />
                ))}

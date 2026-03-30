@@ -134,9 +134,9 @@ useEffect(() => {
 
    return courseData ? (
       <>
-         <div className="flex p-4 sm:p-10 md:grid-cols-2 gap-10 md:px-36 ">
+         <div className="flex flex-col gap-8 p-4 sm:p-6 md:px-12 lg:flex-row lg:items-start lg:px-20 xl:px-36">
             {/* left column */}
-            <div className="text-gray-800 w-1/2">
+            <div className="w-full text-gray-800 lg:w-3/5">
                <h2 className="text-xl font-semibold">Course Structure</h2>
                <div className="pt-6 text-gray-800">
                   <div className="pt-5">
@@ -173,7 +173,7 @@ useEffect(() => {
                                     {chapter.chapterContent.map(
                                        (lecture, i) => (
                                           <li
-                                             className="flex px-7 items-start gap-2 py-1.5"
+                                             className="flex items-start gap-2 px-4 py-2 sm:px-7"
                                              key={i}
                                           >
                                              <img
@@ -184,11 +184,11 @@ useEffect(() => {
                                                 alt="play icon"
                                                 className="w-4 h-4 "
                                              />
-                                             <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
-                                                <p className="">
+                                             <div className="flex w-full flex-col gap-2 text-gray-800 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
+                                                <p className="pr-2">
                                                    {lecture.lectureTitle}
                                                 </p>
-                                                <div className="flex gap-2">
+                                                <div className="flex shrink-0 gap-2">
                                                    {lecture.lectureUrl && (
                                                       <p
                                                          onClick={() =>
@@ -226,27 +226,27 @@ useEffect(() => {
             </div>
 
             {/* right column */}
-            <div className="md:mt-10" >
+            <div className="w-full lg:mt-10 lg:w-2/5" >
                {playerData ? (
                   <div>
                      {getYoutubeVideoId(playerData.lectureUrl) ? (
                       <YouTube
                         videoId={getYoutubeVideoId(playerData.lectureUrl)}
-                        iframeClassName="w-full aspect-video"
+                        iframeClassName="aspect-video w-full"
                      />
                      ) : (
                         <div className="w-full aspect-video flex items-center justify-center bg-gray-100 text-sm text-gray-500">
                            Invalid video URL
                         </div>
                      )}
-                     <div className="flex justify-between items-center mt-1">
+                     <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 
                         <p>{playerData.chapter}.{playerData.lecture} {playerData.lectureTitle}</p>
                         <button onClick={() => markLectureAsCompleted(playerData.lectureId)} className="text-blue-600"> { progressData && progressData.lectureCompleted.includes(playerData.lectureId) ? 'completed' :'Mark as Complete'}</button>
                      </div>
                   </div>
                ) : 
-               <img className="w-[30vw]" src={courseData ? courseData.courseThumbnail : '' } alt="" />
+               <img className="w-full rounded-lg object-cover lg:max-w-md" src={courseData ? courseData.courseThumbnail : '' } alt="" />
                }
 
                <div className="mt-6">

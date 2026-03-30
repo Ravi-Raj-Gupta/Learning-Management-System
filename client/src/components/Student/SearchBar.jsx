@@ -12,10 +12,12 @@ const SearchBar = ({data}) => {
       navigate('/course-list/' + input)
    }
   return (
-      <form onSubmit={onSearchHandler} action="" className='max-w-xl w-full md:h-14 h-12 flex items-center bg-white border border-gray-500/20 rounded '>
-         <img src={assets.search_icon} alt="search icon" className='md:w-auto w-10 px-3 ' />
-         <input onChange={e => setInput(e.target.value)} value={input} type="text" placeholder='Search for Courses' className='w-[25vw] h-full outline-none text-gray-500/80'/>
-         <button type='submit' className='bg-blue-600 rounded text-white md:px-10 px-7 md:py-3 py-2 mx-1'> Search</button>
+      <form onSubmit={onSearchHandler} action="" className='flex w-full max-w-xl flex-col gap-2 rounded border border-gray-500/20 bg-white p-2 sm:h-14 sm:flex-row sm:items-center sm:gap-0 sm:p-0'>
+         <div className='flex flex-1 items-center'>
+            <img src={assets.search_icon} alt="search icon" className='w-10 px-3 md:w-auto' />
+            <input onChange={e => setInput(e.target.value)} value={input} type="text" placeholder='Search for Courses' className='h-full w-full min-w-0 outline-none text-sm text-gray-500/80 sm:text-base'/>
+         </div>
+         <button type='submit' className='self-end rounded bg-blue-600 px-5 py-2 text-white sm:mx-1 sm:self-auto sm:px-8 sm:py-3 md:px-10'> Search</button>
       </form>
   )
 }

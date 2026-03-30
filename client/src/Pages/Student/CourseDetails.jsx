@@ -111,9 +111,9 @@ const token = await getToken();
             {/* Gradient background */}
             <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-cyan-100/70 to-transparent pointer-events-none"></div>
 
-            <div className="flex md:flex-row flex-col-reverse gap-10 items-start justify-between md:px-36 md:pt-20 pt-20 text-left relative z-10">
+            <div className="relative z-10 flex flex-col-reverse gap-8 px-4 pt-20 text-left sm:px-6 md:px-12 lg:flex-row lg:items-start lg:justify-between lg:px-20 lg:pt-20 xl:px-36">
                {/* left column */}
-               <div className="max-w-xl z-10 text-gray-500">
+               <div className="z-10 w-full max-w-3xl text-gray-500">
                   <h1 className="course-details-heading-large course-details-heading-small font-semibold text-gray-800">
                      {courseData.courseTitle}
                   </h1>
@@ -125,7 +125,7 @@ const token = await getToken();
                   ></p>
 
                   {/* review and ratings */}
-                  <div className="flex items-center space-x-2 pt-3 pb-1.5 text-sm">
+                  <div className="flex flex-wrap items-center gap-2 pt-3 pb-1.5 text-sm">
                      <p>{calculateRating(courseData)}</p>
                      <div className="flex">
                         {[...Array(5)].map((_, i) => (
@@ -197,7 +197,7 @@ const token = await getToken();
                                     {chapter.chapterContent.map(
                                        (lecture, i) => (
                                           <li
-                                             className="flex px-7 items-start gap-2 py-1.5"
+                                             className="flex items-start gap-2 px-4 py-2 sm:px-7"
                                              key={i}
                                           >
                                              <img
@@ -205,11 +205,11 @@ const token = await getToken();
                                                 alt="play icon"
                                                 className="w-4 h-4 "
                                              />
-                                             <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
-                                                <p className="">
+                                             <div className="flex w-full flex-col gap-2 text-gray-800 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
+                                                <p className="pr-2">
                                                    {lecture.lectureTitle}
                                                 </p>
-                                                <div className="flex gap-2">
+                                                <div className="flex shrink-0 gap-2">
                                                    {lecture.isPreviewFree && (
                                                       <p
                                                          onClick={() =>
@@ -256,7 +256,7 @@ const token = await getToken();
                </div>
                {/* right column */}
 
-               <div className="bg-white course-card overflow-hidden shadow-xl rounded-md  max-w-xl">
+               <div className="course-card w-full max-w-xl overflow-hidden rounded-md bg-white shadow-xl lg:sticky lg:top-24">
                   {/* Offer */}
                   {playerData ? (
                      playerData.videoId ? (
@@ -273,14 +273,14 @@ const token = await getToken();
                   ) : (
                      <img src={courseData.courseThumbnail} alt="" />
                   )}
-                  <div className="p-6">
-                     <div className="flex items-center gap-2  text-red-500 font-medium mb-4">
+                  <div className="p-4 sm:p-6">
+                     <div className="mb-4 flex items-center gap-2 text-red-500 font-medium">
                         <Timer size={18} />
                         <p>5 days left at this price!</p>
                      </div>
 
                      {/* Price */}
-                     <div className="flex items-center gap-4 mb-4">
+                     <div className="mb-4 flex flex-wrap items-center gap-3 sm:gap-4">
                         <h1 className="md:text-4xl text-2xl font-bold text-gray-900">
                            {Currency}{" "}
                            {(
@@ -300,7 +300,7 @@ const token = await getToken();
                      </div>
 
                      {/* Stats */}
-                     <div className="flex gap-5 text-gray-600 mb-8">
+                     <div className="mb-8 flex flex-wrap gap-4 text-gray-600">
                         <div className="flex items-center gap-1">
                            <img
                               className="text-orange-500"
