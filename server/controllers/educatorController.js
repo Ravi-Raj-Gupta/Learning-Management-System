@@ -3,6 +3,23 @@ import Course from "../models/Course.js";
 import { v2 as cloudinary } from "cloudinary";
 import Purchase from "../models/Purchase.js";
 
+const uploadToCloudinary = (buffer) =>
+   new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+         { resource_type: "image" },
+         (error, result) => {
+            if (error) {
+               reject(error);
+               return;
+            }
+
+            resolve(result);
+         }
+      );
+
+      stream.end(buffer);
+   });
+
 export const updateRoletoEducator = async (req, res) => {
    try {
       const { userId } = getAuth(req);
@@ -48,7 +65,7 @@ export const addCourse = async (req, res) => {
          });
       }
 
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path);
+      const imageUpload = await uploadToCloudinary(imageFile.buffer);
       console.log("Cloudinary URL:", imageUpload.secure_url);
 
       const parsedCourseData = JSON.parse(courseData);
