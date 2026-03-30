@@ -55,32 +55,61 @@ export const addCourse = async (req, res) => {
       const imageFile = req.file;
       const { userId } = getAuth(req);
 
-      console.log("Image file:", imageFile);
-      console.log("Course data:", courseData);
+      if (!userId) {
+         return res.status(401).json({
+            success: false,
+            message: "User not authenticated",
+         });
+      }
 
-      if (!imageFile) {
+      if (!courseData) {
+         return res.status(400).json({
+            success: false,
+            message: "Course data is required",
+         });
+      }
+
+      if (!imageFile?.buffer) {
          return res.status(400).json({
             success: false,
             message: "Course thumbnail is required",
          });
       }
 
+      if (
+         !process.env.CLOUDINARY_NAME ||
+         !process.env.CLOUDINARY_API_KEY ||
+         !process.env.CLOUDINARY_SECRET_KEY
+      ) {
+         return res.status(500).json({
+            success: false,
+            message: "Cloudinary environment variables are missing",
+         });
+      }
+
+      let parsedCourseData;
+
+      try {
+         parsedCourseData = JSON.parse(courseData);
+      } catch {
+         return res.status(400).json({
+            success: false,
+            message: "Invalid course data format",
+         });
+      }
+
       const imageUpload = await uploadToCloudinary(imageFile.buffer);
-      console.log("Cloudinary URL:", imageUpload.secure_url);
-
-      const parsedCourseData = JSON.parse(courseData);
       parsedCourseData.educator = userId;
-      parsedCourseData.courseThumbnail = imageUpload.secure_url; // ✅ pehle set karo
+      parsedCourseData.courseThumbnail = imageUpload.secure_url;
 
-      console.log("Final course data:", parsedCourseData);
-
-      await Course.create(parsedCourseData); // ✅ phir create karo
+      await Course.create(parsedCourseData);
 
       return res.json({
          success: true,
          message: "course added successfully",
       });
    } catch (error) {
+      console.error("Add course error:", error);
       return res.status(500).json({
          success: false,
          message: error.message,
