@@ -114,7 +114,7 @@ const token = await getToken();
             <div className="relative z-10 flex flex-col-reverse gap-8 px-4 pt-20 text-left sm:px-6 md:px-12 lg:flex-row lg:items-start lg:justify-between lg:px-20 lg:pt-20 xl:px-36">
                {/* left column */}
                <div className="z-10 w-full max-w-3xl text-gray-500">
-                  <h1 className="course-details-heading-large course-details-heading-small font-semibold text-gray-800">
+                  <h1 className="course-details-heading-large font-semibold text-gray-800">
                      {courseData.courseTitle}
                   </h1>
                   <p
@@ -328,7 +328,7 @@ const token = await getToken();
                      </div>
 
                      {/* Button */}
-                     <button onClick = {enrollCourse} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold mb-6">
+                     <button onClick = {enrollCourse} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-base rounded-lg font-semibold mb-6">
                         {isAlreadyEnrolled ? "Already Enrolled " : "Enroll Now"}
                      </button>
 

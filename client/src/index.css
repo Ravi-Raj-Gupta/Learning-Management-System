@@ -7,13 +7,13 @@
 
 @layer utilities {
   .course-details-heading-small {
-    font-size: 26px;
-    line-height: 36px;
+    font-size: 20px;
+    line-height: 28px;
   }
 
   .course-details-heading-large{
-    font-size: 40px;
-    line-height: 44px;
+    font-size: 24px;
+    line-height: 32px;
   }
 
   .home-heading-small {
