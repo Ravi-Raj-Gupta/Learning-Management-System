@@ -7,7 +7,7 @@ import { AppContext } from "../../Context/AppContext";
 
 const Dashboard = () => {
    const { getToken } = useAuth();
-   const { backendUrl } = useContext(AppContext);
+   const { backendUrl, navigate } = useContext(AppContext);
 
    const [enrolledCourses, setEnrolledCourses] = useState([]);
    const [progressArray, setProgressArray] = useState([]);
@@ -135,7 +135,8 @@ const Dashboard = () => {
                   return (
                      <div
                         key={course._id}
-                        className="border rounded-xl p-4 shadow"
+                        className="border rounded-xl p-4 shadow cursor-pointer transition hover:-translate-y-1 hover:shadow-lg"
+                        onClick={() => navigate(`/player/${course._id}`)}
                      >
                         <img
                            src={course.courseThumbnail}
@@ -167,6 +168,17 @@ const Dashboard = () => {
                         <p className="text-sm font-semibold text-blue-600">
                            {percentage}% completed
                         </p>
+
+                        <button
+                           type="button"
+                           className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                           onClick={(event) => {
+                              event.stopPropagation();
+                              navigate(`/player/${course._id}`);
+                           }}
+                        >
+                           Start Learning
+                        </button>
                      </div>
                   );
                })}
