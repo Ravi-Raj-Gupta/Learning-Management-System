@@ -1,112 +1,177 @@
-import { assets, dummyDashboardData } from "@/assets/assets";
-import Loading from "@/components/Student/Loading";
-import { AppContext } from "@/Context/AppContext";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
-   const [dashboardData, setDashboardData] = useState(null);
-   const { currency } = useContext(AppContext);
+   const { getToken } = useAuth();
 
-   const fetchDashboardData = () => {
-      setDashboardData(dummyDashboardData);
+   const [enrolledCourses, setEnrolledCourses] = useState([]);
+   const [progressArray, setProgressArray] = useState([]);
+
+   const backendUrl = "http://localhost:5000"; // 🔁 change if deployed
+
+   // 📥 Fetch Enrolled Courses
+   const fetchEnrolledCourses = async () => {
+      try {
+         const token = await getToken();
+
+         const { data } = await axios.get(
+            `${backendUrl}/api/user/enrolled-courses`,
+            {
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+            }
+         );
+
+         if (data.success) {
+            setEnrolledCourses(data.enrolledCourses);
+         }
+
+      } catch (error) {
+         console.error(error);
+         toast.error("Failed to load courses");
+      }
    };
 
+   // 📊 Fetch Progress for each course
+   const getCourseProgress = async () => {
+      try {
+         const token = await getToken();
+
+         if (!enrolledCourses.length) return;
+
+         const tempProgressArray = await Promise.all(
+            enrolledCourses.map(async (course) => {
+               try {
+                  const { data } = await axios.post(
+                     `${backendUrl}/api/user/get-course-progress`,
+                     { courseId: course._id },
+                     {
+                        headers: {
+                           Authorization: `Bearer ${token}`,
+                        },
+                     }
+                  );
+
+                  const totalLectures = calculateNoofLectures(course);
+
+                  const lectureCompleted =
+                     data?.progressData?.lectureCompleted?.length || 0;
+
+                  return {
+                     courseId: course._id,
+                     totalLectures,
+                     lectureCompleted,
+                  };
+
+               } catch (err) {
+                  console.error("Course error:", err.message);
+
+                  return {
+                     courseId: course._id,
+                     totalLectures: 0,
+                     lectureCompleted: 0,
+                  };
+               }
+            })
+         );
+
+         setProgressArray(tempProgressArray);
+
+      } catch (error) {
+         console.error(error);
+         toast.error(error.message);
+      }
+   };
+
+   // 🧮 Count total lectures
+   const calculateNoofLectures = (course) => {
+      let total = 0;
+
+      course.courseContent?.forEach((chapter) => {
+         total += chapter.chapterContent?.length || 0;
+      });
+
+      return total;
+   };
+
+   // 🔄 Load Data
    useEffect(() => {
-      fetchDashboardData();
+      fetchEnrolledCourses();
    }, []);
 
-   return dashboardData ? (
-      <div className="min-h-screen flex flex-col justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-0 items-start ">
-         <div className="space-y-5">
-            <div className="flex flex-wrap gap-5 items-center">
-               <div className="flex  gap-5 border border-blue-500 p-4 w-60 rounded-md">
-                  <img src={assets.patients_icon} alt="patients_icon" />
-                  <div>
-                     <p className="text-2xl font-medium text-gray-600">
-                        {" "}
-                        {dashboardData.enrolledStudentsData.length}
-                     </p>
-                     <p className="text-base text-gray-500">
-                        Total Enrollments
-                     </p>
-                  </div>
-               </div>
+   useEffect(() => {
+      if (enrolledCourses.length) {
+         getCourseProgress();
+      }
+   }, [enrolledCourses]);
 
-               <div className="flex flex-wrap gap-5 border border-blue-500 p-4 w-58 rounded-md">
-                  <img src={assets.appointments_icon} alt="appointments_icon" />
-                  <div>
-                     <p className="text-2xl font-medium text-gray-600">
-                        {" "}
-                        {dashboardData.totalCourses}
-                     </p>
-                     <p className="text-base text-gray-500">Total Courses</p>
-                  </div>
-               </div>
+   // 🎨 UI
+   return (
+      <div className="p-6">
+         <h1 className="text-2xl font-bold mb-6">My Dashboard</h1>
 
-               <div className="flex flex-wrap gap-5 border border-blue-500 p-4 w-58 rounded-md">
-                  <img src={assets.earning_icon} alt="earning_icon" />
-                  <div>
-                     <p className="text-2xl font-medium text-gray-600">
-                        {currency} {dashboardData.totalEarnings}
-                     </p>
-                     <p className="text-base text-gray-500">Total Earnings</p>
-                  </div>
-               </div>
+         {enrolledCourses.length === 0 ? (
+            <p>No courses enrolled yet.</p>
+         ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+               
+               {enrolledCourses.map((course) => {
+                  const progress = progressArray.find(
+                     (p) => p.courseId === course._id
+                  );
+
+                  const percentage = progress
+                     ? Math.floor(
+                          (progress.lectureCompleted /
+                             progress.totalLectures) *
+                             100
+                       )
+                     : 0;
+
+                  return (
+                     <div
+                        key={course._id}
+                        className="border rounded-xl p-4 shadow"
+                     >
+                        <img
+                           src={course.courseThumbnail}
+                           alt=""
+                           className="rounded-lg mb-3"
+                        />
+
+                        <h2 className="text-lg font-semibold">
+                           {course.courseTitle}
+                        </h2>
+
+                        <p className="text-sm text-gray-500 mb-2">
+                           {course.educator?.name}
+                        </p>
+
+                        {/* Progress Bar */}
+                        <div className="w-full bg-gray-200 h-2 rounded mb-2">
+                           <div
+                              className="bg-blue-500 h-2 rounded"
+                              style={{ width: `${percentage}%` }}
+                           ></div>
+                        </div>
+
+                        <p className="text-sm">
+                           {progress?.lectureCompleted || 0} /{" "}
+                           {progress?.totalLectures || 0} lectures
+                        </p>
+
+                        <p className="text-sm font-semibold text-blue-600">
+                           {percentage}% completed
+                        </p>
+                     </div>
+                  );
+               })}
             </div>
-
-            <div>
-               <h2 className="pb-4 text-lg font-medium">Latest Enrollments</h2>
-               <div className="flex flex-col max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-                  <table className="w-full">
-                     <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left bg-gray-50">
-                        <tr>
-                           <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
-                              #
-                           </th>
-                           <th className="px-4 py-3 font-semibold ">
-                              Student Name
-                           </th>
-                           <th className="px-4 py-3 font-semibold ">
-                              Course Title
-                           </th>
-                        </tr>
-                     </thead>
-                     <tbody className="text-sm text-gray-500">
-                        {dashboardData.enrolledStudentsData.map(
-                           (item, index) => (
-                              <tr
-                                 key={index}
-                                 className="border-b border-gray-500/20 "
-                              >
-                                 <td className="px-4 py-3 text-center hidden sm:table-cell">
-                                    {index + 1}
-                                 </td>
-
-                                 <td className="md:px-4 px-2 py-3 flex items-center space-x-3">
-                                    <img
-                                       src={item.student.imageUrl}
-                                       alt="Profile"
-                                       className="w-9 h-9 rounded-full"
-                                    />
-                                    <span className="truncate">
-                                       {item.student.name}
-                                    </span>
-                                 </td>
-
-                                 <td className="px-4 py-3 truncate">
-                                    {item.courseTitle}
-                                 </td>
-                              </tr>
-                           ),
-                        )}
-                     </tbody>
-                  </table>
-               </div>
-            </div>
-         </div>
+         )}
       </div>
-   ) : (
-      <Loading />
    );
 };
 
