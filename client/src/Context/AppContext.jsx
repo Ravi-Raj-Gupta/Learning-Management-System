@@ -13,7 +13,8 @@ export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
    
-   const backendUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || "";
+   const backendBaseUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || "";
+   const backendUrl = backendBaseUrl.replace(/\/+$/, "");
 
 
    const currency = import.meta.env.VITE_CURRENCY;
