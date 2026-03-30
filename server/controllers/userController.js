@@ -1,9 +1,29 @@
-import { getAuth } from "@clerk/express";
+import { clerkClient, getAuth } from "@clerk/express";
 import User from "../models/User.js";
 import Purchase from "../models/Purchase.js";
 import Stripe from "stripe";
 import Course from "../models/Course.js";
 import { CourseProgress } from "../models/courseProgress.js";
+
+const ensureUserExists = async (userId) => {
+   let user = await User.findById(userId);
+
+   if (user) {
+      return user;
+   }
+
+   const clerkUser = await clerkClient.users.getUser(userId);
+
+   user = await User.create({
+      _id: clerkUser.id,
+      email: clerkUser.emailAddresses?.[0]?.emailAddress || "",
+      name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "User",
+      imageUrl: clerkUser.imageUrl || "",
+      enrolledCourses: [],
+   });
+
+   return user;
+};
 
 
 // ✅ Get User Data
@@ -11,14 +31,7 @@ export const getUserData = async (req, res) => {
    try {
       const { userId } = getAuth(req);
 
-      const user = await User.findById(userId);
-
-      if (!user) {
-         return res.json({
-            success: false,
-            message: "User not found",
-         });
-      }
+      const user = await ensureUserExists(userId);
 
       res.json({
          success: true,
@@ -40,7 +53,8 @@ export const userEnrolledCourses = async (req, res) => {
    try {
       const { userId } = getAuth(req);
 
-      const userData = await User.findById(userId).populate("enrolledCourses");
+      const userData = await ensureUserExists(userId);
+      await userData.populate("enrolledCourses");
 
       res.json({
          success: true,
@@ -64,7 +78,7 @@ export const purchaseCourse = async (req, res) => {
       const { origin } = req.headers;
       const { userId } = getAuth(req);
 
-      const userData = await User.findById(userId);
+      const userData = await ensureUserExists(userId);
       const courseData = await Course.findById(courseId);
 
       if (!userData || !courseData) {
