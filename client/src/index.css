@@ -12,8 +12,8 @@
    }
 
    .course-details-heading-large {
-      font-size: 24px;
-      line-height: 32px;
+      font-size: clamp(1.9rem, 1.35rem + 1.6vw, 2.5rem);
+      line-height: 1.2;
    }
 
    .home-heading-small {
@@ -28,7 +28,7 @@
 
    .text-default {
       font-size: 15px;
-      line-height: 21px;
+      line-height: 24px;
    }
 
    .grid-auto {
@@ -40,7 +40,8 @@
    }
 
    .course-card {
-      width: 424px;
+      width: 100%;
+      max-width: 424px;
    }
 }
 
@@ -58,6 +59,7 @@
 
 .rich-text {
    font-size: 15px;
+   line-height: 1.7;
    color: #7A7B7D;
 }
 
@@ -123,4 +125,25 @@
 
 .rich-text li {
    margin-bottom: 8px;
+}
+
+@media (max-width: 640px) {
+   .course-details-heading-large {
+      font-size: 2rem;
+      line-height: 1.2;
+   }
+
+   .course-card {
+      max-width: 100%;
+   }
+
+   .rich-text h1 {
+      font-size: 28px;
+      margin: 24px 0 16px;
+   }
+
+   .rich-text h2 {
+      font-size: 20px;
+      margin: 20px 0 14px;
+   }
 }

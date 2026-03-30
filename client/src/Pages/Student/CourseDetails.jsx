@@ -110,14 +110,14 @@ const CourseDetails = () => {
             {/* Gradient background */}
             <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-cyan-100/70 to-transparent pointer-events-none"></div>
 
-            <div className="relative z-10 flex flex-col-reverse gap-8 px-4 pt-20 text-left sm:px-6 md:px-12 lg:flex-row lg:items-start lg:justify-between lg:px-20 lg:pt-20 xl:px-36">
+            <div className="relative z-10 flex flex-col-reverse gap-8 px-4 pt-8 text-left sm:px-6 sm:pt-10 md:px-12 lg:flex-row lg:items-start lg:justify-between lg:px-20 lg:pt-20 xl:px-36">
                {/* left column */}
                <div className="z-10 w-full max-w-3xl text-gray-500">
                   <h1 className="course-details-heading-large font-semibold text-gray-800">
                      {courseData.courseTitle}
                   </h1>
                   <p
-                     className="pt-4 md:text-base text-sm"
+                     className="pt-4 text-sm leading-7 md:text-base"
                      dangerouslySetInnerHTML={{
                         __html: courseData.courseDescription.slice(0, 200),
                      }}
@@ -163,7 +163,7 @@ const CourseDetails = () => {
                   </p>
 
                   <div className="pt-8 text-gray-800">
-                     <h2 className="text-xl font-semibold">Course Strucure</h2>
+                     <h2 className="text-2xl font-semibold">Course Structure</h2>
 
                      <div className="pt-5">
                         {courseData.courseContent.map((chapter, index) => (
@@ -172,12 +172,12 @@ const CourseDetails = () => {
                               className="border border-gray-400 bg-white mb-2 rounded "
                            >
                               <div
-                                 className="flex items-center justify-between  px-4 py-3 cursor-pointer select-none"
+                                 className="flex flex-col gap-3 px-4 py-3 cursor-pointer select-none sm:flex-row sm:items-center sm:justify-between"
                                  onClick={() => toggleSection(index)}
                               >
-                                 <div className="flex items-center gap-2">
+                                 <div className="flex items-start gap-2">
                                     <img
-                                       className={`transition transition-transform ${opensection[index] ? "rotate-180" : ""}`}
+                                       className={`mt-1 transition transition-transform ${opensection[index] ? "rotate-180" : ""}`}
                                        src={assets.down_arrow_icon}
                                        alt="arrow_icon"
                                     />
@@ -185,7 +185,7 @@ const CourseDetails = () => {
                                        {chapter.chapterTitle}
                                     </p>
                                  </div>
-                                 <p className="text-gray-600 text-sm md:text-default ">
+                                 <p className="text-sm text-gray-600 sm:text-right md:text-default">
                                     {chapter.chapterContent.length} lectures -{" "}
                                     {calculateChapterTime(chapter)}
                                  </p>
@@ -245,8 +245,8 @@ const CourseDetails = () => {
                         ))}
                      </div>
 
-                     <div className="py-20 text-sm text-default">
-                        <h3 className="text-xl text-sm font-semibold text-gray-800">
+                     <div className="py-12 text-sm text-default md:py-20">
+                        <h3 className="text-xl font-semibold text-gray-800">
                            Course Description
                         </h3>
                         <p
@@ -260,7 +260,7 @@ const CourseDetails = () => {
                </div>
                {/* right column */}
 
-               <div className="course-card w-full max-w-xl overflow-hidden rounded-md bg-white shadow-xl lg:sticky lg:top-24">
+               <div className="course-card w-full overflow-hidden rounded-2xl bg-white shadow-xl lg:sticky lg:top-24">
                   {/* Offer */}
                   {playerData ? (
                      playerData.videoId ? (
@@ -275,7 +275,11 @@ const CourseDetails = () => {
                         </div>
                      )
                   ) : (
-                     <img src={courseData.courseThumbnail} alt="" />
+                     <img
+                        src={courseData.courseThumbnail}
+                        alt={courseData.courseTitle}
+                        className="aspect-video w-full object-cover"
+                     />
                   )}
                   <div className="p-4 sm:p-6">
                      <div className="mb-4 flex items-center gap-2 text-red-500 font-medium">
@@ -304,7 +308,7 @@ const CourseDetails = () => {
                      </div>
 
                      {/* Stats */}
-                     <div className="mb-8 flex flex-wrap gap-4 text-gray-600">
+                     <div className="mb-8 flex flex-wrap items-center gap-3 text-gray-600 sm:gap-4">
                         <div className="flex items-center gap-1">
                            <img
                               className="text-orange-500"
@@ -314,14 +318,14 @@ const CourseDetails = () => {
                            <span>{calculateRating(courseData)}</span>
                         </div>
 
-                        <div className="h-4 w-px bg-gray-500/40"></div>
+                        <div className="hidden h-4 w-px bg-gray-500/40 sm:block"></div>
 
                         <div className="flex items-center gap-1">
                            <Clock size={18} />
                            <span>{calculateCourseDuration(courseData)}</span>
                         </div>
 
-                        <div className="h-4 w-px bg-gray-500/40"></div>
+                        <div className="hidden h-4 w-px bg-gray-500/40 sm:block"></div>
 
                         <div className="flex items-center text-sm gap-1">
                            <BookOpen size={18} />
@@ -334,7 +338,7 @@ const CourseDetails = () => {
                      {/* Button */}
                      <button
                         onClick={enrollCourse}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-base rounded-lg font-semibold mb-6"
+                        className="mb-6 w-full rounded-lg bg-blue-600 py-3 text-base font-semibold text-white hover:bg-blue-700"
                      >
                         {isAlreadyEnrolled ? "Already Enrolled " : "Enroll Now"}
                      </button>
