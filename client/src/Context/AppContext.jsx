@@ -13,7 +13,7 @@ export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
    
-   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+   const backendUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || "";
 
 
    const currency = import.meta.env.VITE_CURRENCY;
@@ -153,9 +153,8 @@ export const AppContextProvider = (props) => {
 
    const becomeEducator = async () => {
       const token = await getToken();
-      const apiBase = import.meta.env.VITE_API_URL ?? "";
-      const res = await fetch(`${apiBase}/api/educator/update-role`, {
-         method: "POST",
+      const res = await fetch(`${backendUrl}/api/educator/update-role`, {
+         method: "GET",
          credentials: "include",
          headers: {
             "Content-Type": "application/json",

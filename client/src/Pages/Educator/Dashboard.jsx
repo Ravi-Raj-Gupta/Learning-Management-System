@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { AppContext } from "../../Context/AppContext";
 
 const Dashboard = () => {
    const { getToken } = useAuth();
+   const { backendUrl } = useContext(AppContext);
 
    const [enrolledCourses, setEnrolledCourses] = useState([]);
    const [progressArray, setProgressArray] = useState([]);
-
-   const backendUrl = "http://localhost:5000"; // 🔁 change if deployed
 
    // 📥 Fetch Enrolled Courses
    const fetchEnrolledCourses = async () => {
