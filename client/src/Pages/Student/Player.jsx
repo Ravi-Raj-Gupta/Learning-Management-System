@@ -1,6 +1,7 @@
 import { assets } from "@/assets/assets";
 import Footer from "@/components/Student/Footer";
 import Loading from "@/components/Student/Loading";
+import Rating from "@/components/Student/Rating";
 import { AppContext } from "@/Context/AppContext";
 import axios from "axios";
 import humanizeDuration from "humanize-duration";
@@ -42,11 +43,13 @@ const Player = () => {
       enrolledcourses.forEach((course) => {
          if (course._id === courseId) {
             setCourseData(course);
-            course.courseRatings?.map((item) => {
+            let matchedRating = 0;
+            course.courseRatings?.forEach((item) => {
                if(item.userId === userData?._id){
-                  setIntialRating(item.rating)
+                  matchedRating = item.rating;
                }
-            })
+            });
+            setIntialRating(matchedRating);
          }
       });
    };
@@ -110,6 +113,7 @@ const Player = () => {
 
          if(data.success) {
             toast.success(data.message)
+            setIntialRating(rating)
             fetchUserEnrolledCourses()
          }
          else{
@@ -244,6 +248,10 @@ useEffect(() => {
                ) : 
                <img className="w-[30vw]" src={courseData ? courseData.courseThumbnail : '' } alt="" />
                }
+
+               <div className="mt-6">
+                  <Rating initialValue={initialRating} onRate={handleRate} />
+               </div>
             </div>
          </div>
          <Footer />
