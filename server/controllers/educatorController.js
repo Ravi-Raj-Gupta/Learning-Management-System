@@ -2,6 +2,7 @@ import { clerkClient, getAuth} from "@clerk/express";
 import Course from "../models/Course.js";
 import { v2 as cloudinary } from "cloudinary";
 import Purchase from "../models/Purchase.js";
+import User from "../models/User.js";
 
 const uploadToCloudinary = (buffer) =>
    new Promise((resolve, reject) => {
@@ -146,14 +147,24 @@ export const getEducatorCourses = async (req, res) => {
 
 export const getEducatorDashboardData = async (req, res) => {
    try {
-      const educator = req.auth.userId;
+      const { userId: educator } = getAuth(req);
+
+      if (!educator) {
+         return res.status(401).json({
+            success: false,
+            message: "User not authenticated",
+         });
+      }
+
       const courses = await Course.find({ educator });
       const totalCourses = courses.length;
+      const enrolledStudents = [];
 
       const courseIds = courses.map((course) => course._id);
 
       const purchases = await Purchase.find({
-         course: { $in: courseIds, status: "completed" },
+         courseId: { $in: courseIds },
+         status: "completed",
       });
 
       const totalEarnings = purchases.reduce(
@@ -197,7 +208,15 @@ export const getEducatorDashboardData = async (req, res) => {
 // get enrolled student data with purchase data
 export const getEnrolledStudentData = async (req, res) => {
    try {
-      const educator = req.auth.userId;
+      const { userId: educator } = getAuth(req);
+
+      if (!educator) {
+         return res.status(401).json({
+            success: false,
+            message: "User not authenticated",
+         });
+      }
+
       const courses = await Course.find({ educator });
       const courseIds = courses.map((course) => course._id);
 
