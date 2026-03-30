@@ -32,7 +32,6 @@ export const getUserData = async (req, res) => {
 export const userEnrolledCourses = async (req, res) => {
    try {
       const { userId } = getAuth(req);
-
       const userData = await User.findById(userId).populate("enrolledCourses"); // ✅ fixed: findById
 
       res.json({
