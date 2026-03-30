@@ -10,6 +10,24 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import YouTube from "react-youtube";
 
+const getYoutubeVideoId = (url = "") => {
+   try {
+      const parsedUrl = new URL(url);
+
+      if (parsedUrl.hostname.includes("youtu.be")) {
+         return parsedUrl.pathname.replace("/", "");
+      }
+
+      if (parsedUrl.hostname.includes("youtube.com")) {
+         return parsedUrl.searchParams.get("v") || "";
+      }
+   } catch {
+      return "";
+   }
+
+   return "";
+};
+
 const CourseDetails = () => {
    const { id } = useParams();
 
@@ -196,10 +214,7 @@ const token = await getToken();
                                                       <p
                                                          onClick={() =>
                                                             setPlayerData({
-                                                               videoId:
-                                                                  lecture.lectureUrl
-                                                                     .split("/")
-                                                                     .pop(),
+                                                               videoId: getYoutubeVideoId(lecture.lectureUrl),
                                                             })
                                                          }
                                                          className="text-blue-500 cursor-pointer"
@@ -244,11 +259,17 @@ const token = await getToken();
                <div className="bg-white course-card overflow-hidden shadow-xl rounded-md  max-w-xl">
                   {/* Offer */}
                   {playerData ? (
-                     <YouTube
-                        videoId={playerData.videoId}
-                        opts={{ playerVars: { autoplay: 1 } }}
-                        iframeClassName="w-full aspect-video"
-                     />
+                     playerData.videoId ? (
+                        <YouTube
+                           videoId={playerData.videoId}
+                           opts={{ playerVars: { autoplay: 1 } }}
+                           iframeClassName="w-full aspect-video"
+                        />
+                     ) : (
+                        <div className="w-full aspect-video flex items-center justify-center bg-gray-100 text-sm text-gray-500">
+                           Invalid preview URL
+                        </div>
+                     )
                   ) : (
                      <img src={courseData.courseThumbnail} alt="" />
                   )}

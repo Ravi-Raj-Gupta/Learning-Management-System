@@ -116,7 +116,7 @@ export const purchaseCourse = async (req, res) => {
       ];
 
       const session = await stripeInstance.checkout.sessions.create({
-         success_url: `${origin}/loading/my-enrollments`,
+         success_url: `${origin}/loading/my-enrollments?session_id={CHECKOUT_SESSION_ID}`,
          cancel_url: `${origin}/`,
          line_items,
          mode: "payment",
@@ -133,6 +133,88 @@ export const purchaseCourse = async (req, res) => {
    } catch (error) {
       console.log("❌ ERROR:", error);
       res.status(500).json({
+         success: false,
+         message: error.message,
+      });
+   }
+};
+
+export const verifyPurchase = async (req, res) => {
+   try {
+      const { sessionId } = req.body;
+      const { userId } = getAuth(req);
+
+      if (!sessionId) {
+         return res.status(400).json({
+            success: false,
+            message: "sessionId is required",
+         });
+      }
+
+      const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+      const session = await stripeInstance.checkout.sessions.retrieve(sessionId);
+
+      if (session.payment_status !== "paid") {
+         return res.status(400).json({
+            success: false,
+            message: "Payment not completed",
+         });
+      }
+
+      const { purchaseId } = session.metadata || {};
+
+      if (!purchaseId) {
+         return res.status(400).json({
+            success: false,
+            message: "Purchase metadata missing",
+         });
+      }
+
+      const purchaseData = await Purchase.findById(purchaseId);
+      if (!purchaseData) {
+         return res.status(404).json({
+            success: false,
+            message: "Purchase not found",
+         });
+      }
+
+      if (purchaseData.userId !== userId) {
+         return res.status(403).json({
+            success: false,
+            message: "Unauthorized purchase access",
+         });
+      }
+
+      const userData = await ensureUserExists(userId);
+      const courseData = await Course.findById(purchaseData.courseId);
+
+      if (!courseData) {
+         return res.status(404).json({
+            success: false,
+            message: "Course not found",
+         });
+      }
+
+      if (!courseData.enrolledStudents.includes(userData._id)) {
+         courseData.enrolledStudents.push(userData._id);
+         await courseData.save();
+      }
+
+      if (!userData.enrolledCourses.some((id) => id.toString() === courseData._id.toString())) {
+         userData.enrolledCourses.push(courseData._id);
+         await userData.save();
+      }
+
+      purchaseData.status = "completed";
+      await purchaseData.save();
+
+      return res.json({
+         success: true,
+         message: "Purchase verified successfully",
+      });
+   } catch (error) {
+      console.log("ERROR:", error);
+      return res.status(500).json({
          success: false,
          message: error.message,
       });

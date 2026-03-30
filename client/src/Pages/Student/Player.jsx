@@ -1,15 +1,31 @@
-import App from "@/App";
 import { assets } from "@/assets/assets";
 import Footer from "@/components/Student/Footer";
 import Loading from "@/components/Student/Loading";
 import { AppContext } from "@/Context/AppContext";
 import axios from "axios";
 import humanizeDuration from "humanize-duration";
-import { Axis3D } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import YouTube from "react-youtube";
+
+const getYoutubeVideoId = (url = "") => {
+   try {
+      const parsedUrl = new URL(url);
+
+      if (parsedUrl.hostname.includes("youtu.be")) {
+         return parsedUrl.pathname.replace("/", "");
+      }
+
+      if (parsedUrl.hostname.includes("youtube.com")) {
+         return parsedUrl.searchParams.get("v") || "";
+      }
+   } catch {
+      return "";
+   }
+
+   return "";
+};
 
 const Player = () => {
    const { enrolledcourses, calculateChapterTime, backendUrl, getToken, userData, fetchUserEnrolledCourses } = useContext(AppContext);
@@ -23,11 +39,11 @@ const Player = () => {
 
 
    const getcourseData = () => {
-      enrolledcourses.map((course) => {
+      enrolledcourses.forEach((course) => {
          if (course._id === courseId) {
             setCourseData(course);
-            course.courseRating.map((item) => {
-               if(item.userId === userData._id){
+            course.courseRatings?.map((item) => {
+               if(item.userId === userData?._id){
                   setIntialRating(item.rating)
                }
             })
@@ -44,7 +60,13 @@ const Player = () => {
       if(enrolledcourses.length >0) {
          getcourseData();
       }
-   }, [enrolledcourses]);
+   }, [enrolledcourses, courseId, userData]);
+
+   useEffect(() => {
+      if (!enrolledcourses.length) {
+         fetchUserEnrolledCourses();
+      }
+   }, [enrolledcourses.length, fetchUserEnrolledCourses]);
 
    const markLectureAsCompleted = async(lectureId) => {
       try {
@@ -84,7 +106,7 @@ const Player = () => {
    const handleRate = async(rating) => {
       try {
          const token = await getToken()
-         const {data} = await axios.post(backendUrl + '/api/user/add-Rating', {courseId, rating}, {headers : {Authorization : `Bearer ${token}`}})
+         const {data} = await axios.post(backendUrl + '/api/user/add-rating', {courseId, rating}, {headers : {Authorization : `Bearer ${token}`}})
 
          if(data.success) {
             toast.success(data.message)
@@ -101,7 +123,7 @@ const Player = () => {
 
 useEffect(() => {
     getCourseProgress()
-}, [])
+}, [courseId])
 
 
 
@@ -203,10 +225,16 @@ useEffect(() => {
             <div className="md:mt-10" >
                {playerData ? (
                   <div>
+                     {getYoutubeVideoId(playerData.lectureUrl) ? (
                       <YouTube
-                        videoId={playerData.lectureUrl.split('/').pop()}
+                        videoId={getYoutubeVideoId(playerData.lectureUrl)}
                         iframeClassName="w-full aspect-video"
                      />
+                     ) : (
+                        <div className="w-full aspect-video flex items-center justify-center bg-gray-100 text-sm text-gray-500">
+                           Invalid video URL
+                        </div>
+                     )}
                      <div className="flex justify-between items-center mt-1">
 
                         <p>{playerData.chapter}.{playerData.lecture} {playerData.lectureTitle}</p>

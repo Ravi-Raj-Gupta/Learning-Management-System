@@ -7,7 +7,7 @@ import { data } from "react-router-dom";
 import { toast } from "react-toastify";
 const MyEnrollments = () => {
    const { enrolledcourses, userData, 
-      fetchUserEnrolledCourses, getToken, backendUrl, calculateNoofLectures, calculateCourseDuration, navigate } = useContext(AppContext);
+      fetchUserEnrolledCourses, getToken, backendUrl, calculateNoOfLectures, calculateCourseDuration, navigate } = useContext(AppContext);
 
    const [progressArray, setProgressArray] = useState([])
 
@@ -18,7 +18,7 @@ const MyEnrollments = () => {
             enrolledcourses.map(async(course) => {
                const {data} = await axios.post(`${backendUrl}/api/user/get-course-progress`, {courseId : course._id},{headers : {Authorization : `Bearer ${token}`}} )
 
-               let totalLectures = calculateNoofLectures(course)
+               let totalLectures = calculateNoOfLectures(course)
 
                const lectureCompleted = data.progressData ? data.progressData.lectureCompleted.length : 0;
                return {totalLectures, lectureCompleted}

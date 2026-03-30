@@ -270,6 +270,17 @@ const AddCourse = () => {
                   className="w-full border px-2 py-1"
                 />
 
+                <label className="mt-2 flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={lecture.isPreviewFree}
+                    onChange={(e) =>
+                      handleTempLectureChange(index, "isPreviewFree", e.target.checked)
+                    }
+                  />
+                  Free Preview
+                </label>
+
               </div>
             ))}
 
