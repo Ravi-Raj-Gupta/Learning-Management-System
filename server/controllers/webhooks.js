@@ -89,9 +89,8 @@ export const stripeWebhooks = async (req, res) => {
    let event;
 
    try {
-      // ⚠️ IMPORTANT: req.rawBody use karo (server.js me config lagega)
       event = stripeInstance.webhooks.constructEvent(
-         req.rawBody,
+         req.body,
          sig,
          process.env.STRIPE_WEBHOOK_SECRET
       );
@@ -119,15 +118,16 @@ export const stripeWebhooks = async (req, res) => {
                throw new Error("User or Course not found");
             }
 
-            // Add user to course
-            courseData.enrolledStudents.push(userData._id);
-            await courseData.save();
+            if (!courseData.enrolledStudents.includes(userData._id)) {
+               courseData.enrolledStudents.push(userData._id);
+               await courseData.save();
+            }
 
-            // Add course to user
-            userData.enrolledCourses.push(courseData._id);
-            await userData.save();
+            if (!userData.enrolledCourses.some((id) => id.toString() === courseData._id.toString())) {
+               userData.enrolledCourses.push(courseData._id);
+               await userData.save();
+            }
 
-            // Update purchase
             purchaseData.status = 'completed';
             await purchaseData.save();
 
