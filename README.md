@@ -197,7 +197,7 @@ npm install
 
 # Create .env file with the following variables:
 PORT=5000
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net
+MONGODB_URI=your_mongodb_connection_string
 CLERK_SECRET_KEY=your_clerk_secret_key
 CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLOUDINARY_NAME=your_cloudinary_name
