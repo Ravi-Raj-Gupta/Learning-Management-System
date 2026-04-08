@@ -17,7 +17,9 @@ const ensureUserExists = async (userId) => {
    user = await User.create({
       _id: clerkUser.id,
       email: clerkUser.emailAddresses?.[0]?.emailAddress || "",
-      name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "User",
+      name:
+         `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() ||
+         "User",
       imageUrl: clerkUser.imageUrl || "",
       enrolledCourses: [],
    });
@@ -25,11 +27,17 @@ const ensureUserExists = async (userId) => {
    return user;
 };
 
-
 // ✅ Get User Data
 export const getUserData = async (req, res) => {
    try {
       const { userId } = getAuth(req);
+
+      if (!userId) {
+         return res.status(401).json({
+            success: false,
+            message: "Unauthorized - User ID not found",
+         });
+      }
 
       const user = await ensureUserExists(userId);
 
@@ -37,7 +45,6 @@ export const getUserData = async (req, res) => {
          success: true,
          user,
       });
-
    } catch (error) {
       console.log("❌ ERROR:", error);
       res.status(500).json({
@@ -47,11 +54,17 @@ export const getUserData = async (req, res) => {
    }
 };
 
-
 // ✅ Get Enrolled Courses
 export const userEnrolledCourses = async (req, res) => {
    try {
       const { userId } = getAuth(req);
+
+      if (!userId) {
+         return res.status(401).json({
+            success: false,
+            message: "Unauthorized - User ID not found",
+         });
+      }
 
       const userData = await ensureUserExists(userId);
       await userData.populate("enrolledCourses");
@@ -60,7 +73,6 @@ export const userEnrolledCourses = async (req, res) => {
          success: true,
          enrolledCourses: userData?.enrolledCourses || [],
       });
-
    } catch (error) {
       console.log("❌ ERROR:", error);
       res.status(500).json({
@@ -70,13 +82,26 @@ export const userEnrolledCourses = async (req, res) => {
    }
 };
 
-
 // ✅ Purchase Course
 export const purchaseCourse = async (req, res) => {
    try {
       const { courseId } = req.body;
       const { origin } = req.headers;
       const { userId } = getAuth(req);
+
+      if (!userId) {
+         return res.status(401).json({
+            success: false,
+            message: "Unauthorized - User ID not found",
+         });
+      }
+
+      if (!courseId) {
+         return res.status(400).json({
+            success: false,
+            message: "Course ID is required",
+         });
+      }
 
       const userData = await ensureUserExists(userId);
       const courseData = await Course.findById(courseId);
@@ -129,7 +154,6 @@ export const purchaseCourse = async (req, res) => {
          success: true,
          session_url: session.url,
       });
-
    } catch (error) {
       console.log("❌ ERROR:", error);
       res.status(500).json({
@@ -152,7 +176,8 @@ export const verifyPurchase = async (req, res) => {
       }
 
       const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
-      const session = await stripeInstance.checkout.sessions.retrieve(sessionId);
+      const session =
+         await stripeInstance.checkout.sessions.retrieve(sessionId);
 
       if (session.payment_status !== "paid") {
          return res.status(400).json({
@@ -200,7 +225,11 @@ export const verifyPurchase = async (req, res) => {
          await courseData.save();
       }
 
-      if (!userData.enrolledCourses.some((id) => id.toString() === courseData._id.toString())) {
+      if (
+         !userData.enrolledCourses.some(
+            (id) => id.toString() === courseData._id.toString(),
+         )
+      ) {
          userData.enrolledCourses.push(courseData._id);
          await userData.save();
       }
@@ -220,7 +249,6 @@ export const verifyPurchase = async (req, res) => {
       });
    }
 };
-
 
 // ✅ Update Course Progress
 export const updateUserCourseProgress = async (req, res) => {
@@ -247,7 +275,6 @@ export const updateUserCourseProgress = async (req, res) => {
 
          progressData.lectureCompleted.push(lectureId);
          await progressData.save();
-
       } else {
          await CourseProgress.create({
             userId,
@@ -260,7 +287,6 @@ export const updateUserCourseProgress = async (req, res) => {
          success: true,
          message: "Progress updated successfully",
       });
-
    } catch (err) {
       console.log("❌ ERROR:", err);
       res.status(500).json({
@@ -269,7 +295,6 @@ export const updateUserCourseProgress = async (req, res) => {
       });
    }
 };
-
 
 // ✅ Get Course Progress (🔥 FIXED MAIN ERROR)
 export const getUserCourseProgress = async (req, res) => {
@@ -294,7 +319,6 @@ export const getUserCourseProgress = async (req, res) => {
          success: true,
          progressData,
       });
-
    } catch (error) {
       console.log("❌ ERROR:", error);
       res.status(500).json({
@@ -303,7 +327,6 @@ export const getUserCourseProgress = async (req, res) => {
       });
    }
 };
-
 
 // ✅ Add Rating
 export const addUserRating = async (req, res) => {
@@ -337,7 +360,7 @@ export const addUserRating = async (req, res) => {
       }
 
       const existingIndex = course.courseRatings.findIndex(
-         (r) => r.userId.toString() === userId
+         (r) => r.userId.toString() === userId,
       );
 
       if (existingIndex > -1) {
@@ -352,7 +375,6 @@ export const addUserRating = async (req, res) => {
          success: true,
          message: "Rating added successfully",
       });
-
    } catch (error) {
       console.log("❌ ERROR:", error);
       res.status(500).json({
