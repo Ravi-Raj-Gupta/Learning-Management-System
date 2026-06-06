@@ -14,6 +14,9 @@ import AddCourse from "./Pages/Educator/AddCourse";
 import MyCourses from "./Pages/Educator/MyCourses";
 import StudentEnrolled from "./Pages/Educator/StudentEnrolled";
 import Navbar from "./components/Student/Navbar";
+import AboutUs from "./Pages/Student/AboutUs";
+import ContactUs from "./Pages/Student/ContactUs";
+import PrivacyPolicy from "./Pages/Student/PrivacyPolicy";
 
 const App = () => {
    const isEducatorRoute = useMatch("/educator/*");
@@ -31,6 +34,9 @@ const App = () => {
             <Route path="/course-list/:input" element={<CoursesList />} />
             <Route path="/player/:courseId" element={<Player />} />
             <Route path="/loading/:path" element={<Loading />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/educator" element={<Educator />}>
                <Route index element={<Dashboard />} />
                <Route path="add-course" element={<AddCourse />} />

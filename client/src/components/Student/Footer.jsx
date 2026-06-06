@@ -1,5 +1,6 @@
 import { assets } from "@/assets/assets";
 import React from "react";
+import { Link } from "react-router-dom";
 
 
 const Footer = () => {
@@ -15,8 +16,7 @@ const Footer = () => {
           </div>
 
           <p className="text-sm leading-6 text-left">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text.
+            We provide high-quality, accessible, and interactive online courses to help you master new skills and advance your career. Join our community of lifelong learners today.
           </p>
         </div>
 
@@ -25,10 +25,10 @@ const Footer = () => {
           <h3 className="text-white text-lg font-semibold mb-5">Company</h3>
 
           <ul className="flex flex-col gap-2 text-sm text-left ">
-            <li className="cursor-pointer hover:text-white">Home</li>
-            <li className="cursor-pointer hover:text-white">About us</li>
-            <li className="cursor-pointer hover:text-white">Contact us</li>
-            <li className="cursor-pointer hover:text-white">Privacy policy</li>
+            <li><Link to="/" className="cursor-pointer hover:text-white">Home</Link></li>
+            <li><Link to="/about" className="cursor-pointer hover:text-white">About us</Link></li>
+            <li><Link to="/contact" className="cursor-pointer hover:text-white">Contact us</Link></li>
+            <li><Link to="/privacy-policy" className="cursor-pointer hover:text-white">Privacy policy</Link></li>
           </ul>
         </div>
 
