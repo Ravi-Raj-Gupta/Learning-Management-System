@@ -15,7 +15,7 @@ const connectDB = async () => {
          console.log("⚠️  MongoDB disconnected");
       });
 
-      await mongoose.connect(`${process.env.MONGODB_URI}/LMS`, {
+      await mongoose.connect(`${process.env.MONGODB_URI}`, {
          retryWrites: true,
          w: "majority",
          serverSelectionTimeoutMS: 10000,
